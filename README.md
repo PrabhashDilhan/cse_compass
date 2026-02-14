@@ -67,6 +67,67 @@ flowchart TD
 | **cse_compass_report_node** | Combines RAG summary, market data, and web results into a JSON report (confidence, decision, key points, risks, watchlist triggers, email draft) |
 | **send_email_node** | Sends the report via email using the configured email tool |
 
+## Setup
+
+The `data/` directory is not included in the repo. Create it and add financial reports before running RAG ingestion.
+
+### 1. Create directory structure
+
+```bash
+mkdir -p data/raw/cse
+mkdir -p data/vectorstore/chroma_db
+```
+
+### 2. Add financial reports
+
+Choose one of the following options:
+
+**Option A: Raw PDFs**
+
+Place PDF files under `data/raw/cse/` (or a subdirectory). PDFs are discovered recursively.
+
+- **Filename format** (recommended): `{ticker}_{year}_{type}.pdf`  
+  Examples: `JKH_2023_annual.pdf`, `DFCC_2024_q1.pdf`
+- **Alternative**: Organize by folder, e.g. `data/raw/cse/JKH/2023/annual.pdf`
+
+**Option B: Processed reports**
+
+If you have pre-processed reports (text.md, tables.json, metadata.json), place them under:
+
+```
+data/raw/cse/processed_reports/
+  └── {Company Name (TICKER)}/
+      └── annual|quarterly|press_release/
+          └── {report_id}/
+              ├── metadata.json
+              ├── text.md   (or combined.md)
+              └── tables.json
+```
+
+Example: `data/raw/cse/processed_reports/John Keells Holdings (JKH.N0000)/annual/371_1723200115194.06.2024/`
+
+### 3. Run RAG ingestion
+
+**For PDFs:**
+
+```bash
+python3 -m cse_compass.ingestion.ingest_reports \
+  --input data/raw/cse \
+  --persist data/vectorstore/chroma_db
+```
+
+**For processed reports:**
+
+```bash
+python3 -m cse_compass.ingestion.ingest_processed_reports \
+  --input data/raw/cse/processed_reports \
+  --persist data/vectorstore/chroma_db
+```
+
+Optional: add `--cache-chunks data/processed/chunks` to cache chunk JSONL files.
+
+---
+
 ## Run
 
 ```bash
