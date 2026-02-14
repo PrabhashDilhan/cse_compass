@@ -403,9 +403,9 @@ def make_thread_id() -> str:
     return str(uuid.uuid4())
 
 state = {
-        "messages": [HumanMessage(content="I want to buy John Keells Holdings stock. Give me a recommendation.")],
-        "company_name": "John Keells Holdings",
-        "ticker_from_company": "JKH.N0000",
+        "messages": [HumanMessage(content="I want to buy ROYAL CERAMICS LANKA PLC stock. Give me a recommendation.")],
+        "company_name": "ROYAL CERAMICS LANKA PLC",
+        "ticker_from_company": "RCL.N0000",
         "intent": "BUY",
         "buy_price": None,
         "rag_search_results": "",
