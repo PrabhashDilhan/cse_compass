@@ -30,13 +30,13 @@ flowchart TD
     START([START]) --> rag_summarizer_node
     rag_summarizer_node[RAG Summarizer Node] --> cse_mcp_node
 
-    cse_mcp_node[CSE MCP Node] -->|tool calls| cse_mcp_tools
+    cse_mcp_node[CSE MCP Node] -->|tool calls| cse_mcp_tool
     cse_mcp_node -->|no tool calls| web_search_node
-    cse_mcp_tools[CSE MCP Tools] --> cse_mcp_node
+    cse_mcp_tool[CSE MCP Tool] --> cse_mcp_node
 
-    web_search_node[Web Search Node] -->|tool calls| web_search_tools
+    web_search_node[Web Search Node] -->|tool calls| web_search_tool
     web_search_node -->|no tool calls| cse_compass_report_node
-    web_search_tools[Web Search Tools] --> web_search_node
+    web_search_tool[Web Search Tool] --> web_search_node
 
     cse_compass_report_node[CSE Compass Report Node] --> send_email_node
     send_email_node[Send Email Node] --> END([END])
@@ -49,9 +49,9 @@ flowchart TD
         send_email_node
     end
 
-    subgraph "Tool Nodes"
-        cse_mcp_tools
-        web_search_tools
+    subgraph Tools
+        cse_mcp_tool
+        web_search_tool
     end
 ```
 
@@ -60,8 +60,10 @@ flowchart TD
 | Node | Purpose |
 |------|---------|
 | **rag_summarizer_node** | Queries RAG over financial reports, extracts signals (revenue, profitability, debt, cash flow, risks), and produces a structured summary |
-| **cse_mcp_node** | Calls CSE MCP tools for live market data (price, change, change %); may loop via `cse_mcp_tools` until data is retrieved |
-| **web_search_node** | Plans and runs web searches for company news, CSE market updates, Sri Lanka macro, and global risks; may loop via `web_search_tools` |
+| **cse_mcp_node** | Calls CSE MCP tools for live market data (price, change, change %); may loop via CSE MCP Tool until data is retrieved |
+| **CSE MCP Tool** | Executes CSE MCP market data tool calls |
+| **web_search_node** | Plans and runs web searches for company news, CSE market updates, Sri Lanka macro, and global risks; may loop via Web Search Tool |
+| **Web Search Tool** | Executes web search tool calls |
 | **cse_compass_report_node** | Combines RAG summary, market data, and web results into a JSON report (confidence, decision, key points, risks, watchlist triggers, email draft) |
 | **send_email_node** | Sends the report via email using the configured email tool |
 
