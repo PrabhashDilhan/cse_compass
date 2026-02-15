@@ -43,7 +43,9 @@ email_tool = get_email_tool()
 
 tools = [*cse_tools, web_search_tool, rag_search_tool, email_tool]
 
-rag_summarizer_llm = ChatOpenAI(model="gpt-4o-mini")
+model_name = "gpt-4o-mini"
+
+rag_summarizer_llm = ChatOpenAI(model=model_name)
 
 RAG_QUERIES = [
     "Revenue trend",
@@ -125,7 +127,7 @@ def rag_search_node_router(state: State) -> str:
     return "cse_mcp_node"
 
 
-cse_mcp_llm = ChatOpenAI(model="gpt-4o-mini")
+cse_mcp_llm = ChatOpenAI(model=model_name)
 cse_mcp_llm_with_tools = cse_mcp_llm.bind_tools(cse_tools)
 
 
@@ -225,7 +227,7 @@ def _parse_tool_content(content):
     return content
 
 
-web_search_llm = ChatOpenAI(model="gpt-4o-mini")
+web_search_llm = ChatOpenAI(model=model_name)
 web_search_llm_with_tools = web_search_llm.bind_tools([web_search_tool])
 
 
@@ -304,7 +306,7 @@ def web_search_node_router(state: State) -> str:
     return "cse_compass_report_node"
 
 
-cse_compass_llm = ChatOpenAI(model="gpt-4o-mini")
+cse_compass_llm = ChatOpenAI(model=model_name)
 
 def _safe_json(text: str):
     try:
@@ -402,17 +404,19 @@ graph = graph_builder.compile(checkpointer=memory)
 def make_thread_id() -> str:
     return str(uuid.uuid4())
 
-state = {
-        "messages": [HumanMessage(content="I want to buy ROYAL CERAMICS LANKA PLC stock. Give me a recommendation.")],
-        "company_name": "ROYAL CERAMICS LANKA PLC",
-        "ticker_from_company": "RCL.N0000",
-        "intent": "BUY",
-        "buy_price": None,
-        "rag_search_results": "",
-        "web_search_results": {},
-        "web_search_done": False
-}
-config = {"configurable": {"thread_id": make_thread_id()}}
-result = asyncio.run(graph.ainvoke(state, config=config))
-last_msg = result["messages"][-1]
-print(last_msg.content if hasattr(last_msg, "content") else last_msg)
+if __name__ == "__main__":
+
+    state = {
+            "messages": [HumanMessage(content="I want to buy PGP GLASS CEYLON PLC(GLAS.N0000) stock. Give me a recommendation.")],
+            "company_name": "PGP GLASS CEYLON PLC",
+            "ticker_from_company": "GLAS.N0000",
+            "intent": "BUY",
+            "buy_price": None,
+            "rag_search_results": "",
+            "web_search_results": {},
+            "web_search_done": False
+    }
+    config = {"configurable": {"thread_id": make_thread_id()}}
+    result = asyncio.run(graph.ainvoke(state, config=config))
+    last_msg = result["messages"][-1]
+    print(last_msg.content if hasattr(last_msg, "content") else last_msg)
